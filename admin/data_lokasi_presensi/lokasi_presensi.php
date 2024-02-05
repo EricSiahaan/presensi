@@ -45,7 +45,7 @@ $result = mysqli_query($connection, "SELECT * FROM lokasi_presensi ORDER BY id D
                         <td class="text-center">
                             <a href="<?= base_url('admin/data_lokasi_presensi/detail.php/' . $lokasi['id']) ?>" class="badge badge-pill bg-success">Detail</a>
                             <a href="<?= base_url('admin/data_lokasi_presensi/edit.php/' . $lokasi['id']) ?>" class="badge badge-pill bg-primary">Edit</a>
-                            <a href="<?= base_url('admin/data_lokasi_presensi/hapus.php/' . $lokasi['id']) ?>" class="badge badge-pill bg-danger">Edit</a>
+                            <a href="<?= base_url('admin/data_lokasi_presensi/hapus.php/' . $lokasi['id']) ?>" class="badge badge-pill bg-danger">Hapus</a>
                         </td>
                     </tr>
                 <?php endwhile; ?>
