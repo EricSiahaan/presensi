@@ -15,7 +15,11 @@ if (!$connection) {
 function base_url($url = null)
 
 {
+<<<<<<< HEAD
     $base_url = "http://localhost:3000";
+=======
+    $base_url = "http://localhost:9000";
+>>>>>>> refs/remotes/origin/main
 
     if ($url != null) {
         return $base_url . '/' . $url;
@@ -23,3 +27,5 @@ function base_url($url = null)
         return $base_url;
     }
 }
+
+
