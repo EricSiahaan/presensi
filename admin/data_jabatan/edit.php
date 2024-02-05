@@ -2,9 +2,9 @@
 session_start();
 ob_start();
 if (!isset($_SESSION['login'])) {
-    header("location:../../auth/login.php?pesan=belum_login");
+    header("location:/../auth/login.php?pesan=belum_login");
 } else if ($_SESSION["role"] != 'admin') {
-    header("location:../../auth/login.php?pesan=tolak_akses");
+    header("location:/../auth/login.php?pesan=tolak_akses");
 }
 
 $judul = " Edit Data Jabatan";
