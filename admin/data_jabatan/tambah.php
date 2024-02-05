@@ -7,7 +7,7 @@ if (!isset($_SESSION['login'])) {
     header("location:../../auth/login.php?pesan=tolak_akses");
 }
 
-$judul = " Tambah Data Jabatan";
+$judul = "Tambah Data Jabatan";
 include('../layout/header.php');
 require_once('../../config.php');
 

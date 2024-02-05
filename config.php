@@ -15,7 +15,7 @@ if (!$connection) {
 function base_url($url = null)
 
 {
-    $base_url = "http://localhost:3000";
+    $base_url = "http://localhost/presensi";
 
     if ($url != null) {
         return $base_url . '/' . $url;

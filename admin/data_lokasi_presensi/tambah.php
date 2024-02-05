@@ -23,6 +23,7 @@ if (isset($_POST['submit'])) {
     $jam_pulang = htmlspecialchars($_POST['jam_pulang']);
 
 
+<<<<<<< HEAD
     $result = mysqli_query($connection, "INSERT INTO lokasi_presensi(nama_lokasi, alamat_lokasi, tipe_lokasi, latitude, longitude, radius, zona_waktu, jam_masuk, jam_pulang) VALUES
     ('$nama_lokasi', '$alamat_lokasi', '$tipe_lokasi', '$latitude', '$longitude', '$radius', '$zona_waktu', '$jam_masuk','$jam_pulang')
     ");
@@ -31,6 +32,8 @@ if (isset($_POST['submit'])) {
     header("Location: lokasi_presensi.php");
     exit;
 }
+=======
+>>>>>>> 1816806bfa96d34ecbeaef182c8dfe7f8ec28871
 
 ?>
 
@@ -41,6 +44,7 @@ if (isset($_POST['submit'])) {
 
         <div class="card col-md-6">
             <div class="card-body">
+<<<<<<< HEAD
                 <form action="<?= base_url('admin/data_lokasi_presensi/tambah.php') ?>" method="POST">
                     <div class="mb-3">
                         <label for="">Nama Lokasi</label>
@@ -96,6 +100,3 @@ if (isset($_POST['submit'])) {
                 </form>
             </div>
         </div>
-
-    </div>
-</div>
