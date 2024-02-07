@@ -75,84 +75,167 @@ if (isset($_POST['submit'])) {
 
 <div class="page-body">
     <div class="container-xl">
-        <div class="card col-md-6">
-            <div class="card-body">
-                <form action="<?= base_url('admin/data_lokasi_presensi/tambah.php') ?>" method="POST">
-                    <div class="mb-3">
-                        <label for="">NIP</label>
-                        <input type="text" class="form-control" name="nip" value="<?php if (isset($_POST['nama_lokasi']))
-                            echo $_POST['nama_lokasi'] ?>">
-                        </div>
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="<?= base_url('admin/data_lokasi_presensi/tambah.php') ?>" method="POST">
+
+                            <?php
+                            $ambil_nip = mysqli_query($connection, "SELECT nip FROM pegawai ORDER BY nip DESC LIMIT 1");
+                            if (mysqli_num_rows($ambil_nip) > 0) {
+                                $row = mysqli_fetch_assoc($ambil_nip);
+                                $nip_db = $row['nip'];
+                                $nip_db = explode("-", $nip_db);
+                                $no_baru = (int) $nip_db[1] + 1;
+                                $nip_baru = "PEG-" . str_pad($no_baru, 4, 0, STR_PAD_LEFT);
+                            } else {
+                                $nip_baru = "PEG-0001";
+                            }
+
+
+
+                            ?>
+                            <div class="mb-3">
+                                <label for="">NIP</label>
+                                <input type="text" class="form-control" name="nip" value="<?= $nip_baru ?>">
+                            </div>
+                            <div class="mb-3">
+                                <label for="">Nama</label>
+                                <input type="text" class="form-control" name="nama" value="<?php if (isset($_POST['nama']))
+                                                                                                echo $_POST['nama'] ?>">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="">Jenis Kelamin </label>
+                                <select name="jenis_kelamin" class="form-control">
+                                    <option value="">--Pilih Jenis Kelamin--</option>
+                                    <option <?php if (isset($_POST['jenis_kelamin']) && $_POST['jenis_kelamin'] == 'Laki-laki') {
+                                                echo 'selected';
+                                            }
+                                            ?> value="laki-laki">Laki-Laki</option>
+                                    <option <?php if (isset($_POST['jenis_kelamin']) && $_POST['jenis_kelamin'] == 'Perempuan') {
+                                                echo 'selected';
+                                            }
+                                            ?> value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="">Alamat</label>
+                                <input type="text" class="form-control" name="alamat" value="<?php if (isset($_POST['alamat']))
+                                                                                                    echo $_POST['alamat'] ?>">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Tipe Lokasi">Jabatan </label>
+                                <select name="jenis_kelamin" class="form-control">
+                                    <option value="">--Pilih Jabatan--</option>
+
+                                    <?php
+                                    $ambil_jabatan = mysqli_query($connection, "SELECT * from jabatan ORDER BY jabatan ASC");
+
+                                    while ($jabatan = mysqli_fetch_assoc($ambil_jabatan)) {
+                                        $nama_jabatan = $jabatan['jabatan'];
+
+                                        if (isset($_POST['jabatan']) && $_POST['jabatan'] == $nama_jabatan) {
+                                            echo '<option value="' . $nama_jabatan . '"selected="selected">' . $nama_jabatan . '</option>';
+                                        } else {
+                                            echo '<option value="' . $nama_jabatan . '">' . $nama_jabatan . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Tipe Lokasi">Status</label>
+                                <select name="status" class="form-control">
+                                    <option value="">--Pilih Status--</option>
+                                    <option <?php if (isset($_POST['status']) && $_POST['status'] == 'Aktif') {
+                                                echo 'selected';
+                                            }
+                                            ?> value="Aktif">Aktif</option>
+                                    <option <?php if (isset($_POST['status']) && $_POST['status'] == 'Tidak Aktif') {
+                                                echo 'selected';
+                                            }
+                                            ?> value="Tidak Aktif">Tidak Aktif</option>
+                                </select>
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+
                         <div class="mb-3">
-                            <label for="">Alamat Lokasi</label>
-                            <input type="text" class="form-control" name="alamat_lokasi" value="<?php if (isset($_POST['alamat_lokasi']))
-                            echo $_POST['alamat_lokasi'] ?>">
+                            <label for="">Username</label>
+                            <input type="text" class="form-control" name="username" value="<?php if (isset($_POST['username']))
+                                                                                                echo $_POST['username'] ?>">
                         </div>
 
                         <div class="mb-3">
-                            <label for="Tipe Lokasi">Tipe Lokasi </label>
-                            <select name="tipe_lokasi" class="form-control">
-                                <option value="">--Pilih Tipe Lokasi--</option>
-                                <option <?php if (isset($_POST['tipe_lokasi']) && $_POST['tipe_lokasi'] == 'Pusat') {
-                            echo 'selected';
-                        }
-                        ?> value="Pusat">Pusat</option>
-                            <option <?php if (isset($_POST['tipe_lokasi']) && $_POST['tipe_lokasi'] == 'Cabang') {
-                                echo 'selected';
-                            }
-                            ?> value="Cabang">Cabang</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="">Latitude</label>
-                        <input type="text" class="form-control" name="latitude" value="<?php if (isset($_POST['latitude']))
-                            echo $_POST['latitude'] ?>">
+                            <label for="">Password</label>
+                            <input type="password" class="form-control" name="password">
                         </div>
+
                         <div class="mb-3">
-                            <label for="">Longitude</label>
-                            <input type="text" class="form-control" name="longitude" value="<?php if (isset($_POST['longitude']))
-                            echo $_POST['longitude'] ?>">
+                            <label for="">Ulangi Password</label>
+                            <input type="password" class="form-control" name="ulangi_password">
                         </div>
+
                         <div class="mb-3">
-                            <label>Radius</label>
-                            <input type="number" class="form-control" name="radius" value="<?php if (isset($_POST['radius']))
-                            echo $_POST['radius'] ?>">
+                            <label for="Tipe Lokasi">Status</label>
+                            <select name="status" class="form-control">
+                                <option value="">--Pilih Role--</option>
+                                <option <?php if (isset($_POST['role']) && $_POST['role'] == 'admin') {
+                                            echo 'selected';
+                                        }
+                                        ?> value="admin">Admin</option>
+                                <option <?php if (isset($_POST['status']) && $_POST['status'] == 'pegawai') {
+                                            echo 'selected';
+                                        }
+                                        ?> value="pegawai">Pegawai</option>
+                            </select>
+
                         </div>
+
                         <div class="mb-3">
-                            <label>Zona Waktu</label>
-                            <select name="zona_waktu" class="form-control">
-                                <option value="">--Pilih Zona Waktu--</option>
-                                <option <?php if (isset($_POST['zona_waktu']) && $_POST['zona_waktu'] == 'WIB') {
-                            echo 'selected';
-                        }
-                        ?> value="WIB">WIB</option>
-                            <option <?php if (isset($_POST['zona_waktu']) && $_POST['zona_waktu'] == 'WIT') {
-                                echo 'selected';
-                            }
-                            ?> value="WIT">WIT</option>
-                            <option <?php if (isset($_POST['zona_waktu']) && $_POST['zona_waktu'] == 'WITA') {
-                                echo 'selected';
-                            }
-                            ?> value="WITA">WITA</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label>Jam Masuk</label>
-                        <input type="time" class="form-control" name="jam_masuk" value="<?php if (isset($_POST['jam_masuk']))
-                            echo $_POST['jam_masuk'] ?>">
+                            <label for="">Lokasi Presensi </label>
+                            <select name="jenis_kelamin" class="form-control">
+                                <option value="">--Pilih Lokasi Presensi--</option>
+
+                                <?php
+                                $ambil_lok_presensi = mysqli_query($connection, "SELECT * FROM lokasi_presensi ORDER BY nama_lokasi ASC");
+
+                                while ($lokasi = mysqli_fetch_assoc($ambil_lok_presensi)) {
+                                    $nama_lokasi = $lokasi['nama_lokasi'];
+
+                                    if (isset($_POST['lokasi_presensi']) && $_POST['lokasi_presensi'] == $nama_lokasi) {
+                                        echo '<option value="' . $nama_lokasi . '"selected="selected">' . $nama_lokasi . '</option>';
+                                    } else {
+                                        echo '<option value="' . $nama_lokasi . '">' . $nama_lokasi . '</option>';
+                                    }
+                                }
+                                ?>
+                            </select>
                         </div>
+
                         <div class="mb-3">
-                            <label>Jam Pulang</label>
-                            <input type="time" class="form-control" name="jam_pulang" value="<?php if (isset($_POST['jam_pulang']))
-                            echo $_POST['jam_pulang'] ?>">
+                            <label for="">Foto</label>
+                            <input type="file" class="form-control" name="foto">
                         </div>
+
                         <button type="submit" class="btn btn-primary" name="submit">Simpan</button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+        </form>
 
 
 
-<?php include("../layout/footer.php") ?>
+        <?php include("../layout/footer.php") ?>
