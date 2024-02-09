@@ -60,7 +60,7 @@ $result = mysqli_query($connection, "SELECT users.id_pegawai, users.username, us
                                 class="badge badge-pill bg-success">Detail</a>
                             <a href="<?= base_url('admin/data_pegawai/edit.php?id=' . $pegawai['id']) ?>"
                                 class="badge badge-pill bg-primary">Edit</a>
-                            <a href="<?= base_url('admin/data_pegawai/hapus.php?id=' . $pegawaik['id']) ?>"
+                            <a href="<?= base_url('admin/data_pegawai/hapus.php?id=' . $pegawai['id']) ?>"
                                 class="badge badge-pill bg-danger tombol-hapus">Hapus</a>
                         </td>
                     </tr>

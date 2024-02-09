@@ -12,95 +12,125 @@ include('../layout/header.php');
 require_once('../../config.php');
 
 if (isset($_POST['submit'])) {
-    $nama_lokasi = htmlspecialchars($_POST['nama_lokasi']);
-    $alamat_lokasi = htmlspecialchars($_POST['alamat_lokasi']);
-    $tipe_lokasi = htmlspecialchars($_POST['tipe_lokasi']);
-    $latitude = htmlspecialchars($_POST['latitude']);
-    $longitude = htmlspecialchars($_POST['longitude']);
-    $radius = htmlspecialchars($_POST['radius']);
-    $zona_waktu = htmlspecialchars($_POST['zona_waktu']);
-    $jam_masuk = htmlspecialchars($_POST['jam_masuk']);
-    $jam_pulang = htmlspecialchars($_POST['jam_pulang']);
+    $ambil_nip = mysqli_query($connection, "SELECT nip FROM pegawai ORDER BY nip DESC LIMIT 1");
+    if (mysqli_num_rows($ambil_nip) > 0) {
+        $row = mysqli_fetch_assoc($ambil_nip);
+        $nip_db = $row['nip'];
+        $nip_db = explode("-", $nip_db);
+        $no_baru = (int) $nip_db[1] + 1;
+        $nip_baru = "PEG-" . str_pad($no_baru, 4, 0, STR_PAD_LEFT);
+    } else {
+        $nip_baru = "PEG-0001";
+    }
+    $nip = $nip_baru;
+    $nama = htmlspecialchars($_POST['nama']);
+    $jenis_kelamin = htmlspecialchars($_POST['jenis_kelamin']);
+    $alamat = htmlspecialchars($_POST['alamat']);
+    $no_handphone = htmlspecialchars($_POST['no_handphone']);
+    $jabatan = htmlspecialchars($_POST['jabatan']);
+    $username = htmlspecialchars($_POST['username']);
+    $status = htmlspecialchars($_POST['status']);
+    $password = htmlspecialchars($_POST['password'], PASSWORD_DEFAULT);
+    $role = htmlspecialchars($_POST['role']);
+    $lokasi_presensi = htmlspecialchars($_POST['lokasi_presensi']);
+
+    if (isset($_FILES['foto'])) {
+        $file = $_FILES['foto'];
+        $nama_file = $file['name'];
+        $file_tmp =  $file['tmp_name'];
+        $ukuran_file = $file['size'];
+        $file_directori = "../../assets/img/foto-pegawai/" . $nama_file;
+
+        $ambil_ekstensi = pathinfo($nama_file, PATHINFO_EXTENSION);
+        $ekstensi_diizinkan = ["jpg", "png", "jpeg"];
+        $max_ukuran_file = 2 * 1024 * 1024;
+
+        move_uploaded_file($file_tmp, $file_directori);
+    }
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (empty($nama_lokasi)) {
-            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Nama lokasi wajib di isi";
+        if (empty($nama)) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Nama wajib di isi";
         }
-        if (empty($alamat_lokasi)) {
-            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Alamat lokasi wajib di isi";
-        }
-
-        if (empty($tipe_lokasi)) {
-            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Tipe Lokasi Wajib di isi";
+        if (empty($jenis_kelamin)) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Jenis Kelamin wajib di isi";
         }
 
-        if (empty($latitude)) {
-            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Latitude wajib di isi";
-        }
-        if (empty($longitude)) {
-            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Longitude lokasi wajib di isi";
+        if (empty($alamat)) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Alamat Wajib di isi";
         }
 
-        if (empty($radius)) {
-            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Radius Wajib di isi";
+        if (empty($no_handphone)) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>No Handphone wajib di isi";
+        }
+        if (empty($jabatan)) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Jabatan wajib di isi";
         }
 
-        if (empty($zona_waktu)) {
-            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Zona Waktu wajib di isi";
-        }
-        if (empty($jam_masuk)) {
-            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Jam masuk wajib di isi";
+        if (empty($status)) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Status wajib di isi";
         }
 
-        if (empty($jam_pulang)) {
-            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Jam Pulang Wajib di isi";
+        if (empty($username)) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Username di isi";
         }
 
-        if (!empty($pesan_kesalahan)) {
-            $_SESSION['validasi'] = implode("<br>", $pesan_kesalahan);
+        if (empty($role)) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Role wajib di isi";
+        }
+        if (empty($status)) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Status wajib di isi";
+        }
+        
+        if (empty($lokasi_presensi)) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Lokasi Presensi Wajib di isi";
+        }
+        
+        if ($_POST['password'] != $_POST['ulangi_password']) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Password Tidak Cocok";
+        }
+
+        if(!in_array(strtolower($ambil_ekstensi), $ekstensi_diizinkan)) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Format Tidak Sesuai";
+        }
+
+        if ($ukuran_file > $max_ukuran_file) {
+            $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Ukuran Melebihi 10 MB";
+        }
+ if (!empty($pesan_kesalahan)) {
+            $_SESSION['validasi'] = implode("<br>",  $pesan_kesalahan);
         } else {
-            $result = mysqli_query($connection, "INSERT INTO lokasi_presensi(nama_lokasi, alamat_lokasi, tipe_lokasi, latitude, longitude, radius, zona_waktu, jam_masuk, jam_pulang) VALUES
-        ('$nama_lokasi', '$alamat_lokasi', '$tipe_lokasi', '$latitude', '$longitude', '$radius', '$zona_waktu', '$jam_masuk','$jam_pulang')
+            $pegawai = mysqli_query($connection, "INSERT INTO pegawai(nip, nama, jenis_kelamin, alamat, no_handphone, jabatan, lokasi_presensi, foto) VALUES
+        ('$nip', '$nama', '$jenis_kelamin', '$alamat', '$no_handphone', '$jabatan', '$lokasi_presensi', '$nama_file')
         ");
+            $id_pegawai = mysqli_insert_id($connection);
+            $user = mysqli_query($connection, "INSERT INTO users(id_pegawai, username, password, status, role) VALUES
+            ('$id_pegawai', '$username', '$password', '$status', '$role')
+            ");
 
             $_SESSION['berhasil'] = 'Data Berhasil Di simpan';
-            header("Location: lokasi_presensi.php");
+            header("Location: pegawai.php");
             exit;
+
         }
     }
 }
-
 
 ?>
 
 <div class="page-body">
     <div class="container-xl">
-        <div class="row">
+        <form action="<?= base_url('admin/data_pegawai/tambah.php') ?>" method="POST" enctype="multipart/form-data">
+            <div class="row">
 
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <form action="<?= base_url('admin/data_lokasi_presensi/tambah.php') ?>" method="POST">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
 
-                            <?php
-                            $ambil_nip = mysqli_query($connection, "SELECT nip FROM pegawai ORDER BY nip DESC LIMIT 1");
-                            if (mysqli_num_rows($ambil_nip) > 0) {
-                                $row = mysqli_fetch_assoc($ambil_nip);
-                                $nip_db = $row['nip'];
-                                $nip_db = explode("-", $nip_db);
-                                $no_baru = (int) $nip_db[1] + 1;
-                                $nip_baru = "PEG-" . str_pad($no_baru, 4, 0, STR_PAD_LEFT);
-                            } else {
-                                $nip_baru = "PEG-0001";
-                            }
-
-
-
-                            ?>
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label for="">NIP</label>
                                 <input type="text" class="form-control" name="nip" value="<?= $nip_baru ?>">
-                            </div>
+                            </div> -->
                             <div class="mb-3">
                                 <label for="">Nama</label>
                                 <input type="text" class="form-control" name="nama" value="<?php if (isset($_POST['nama']))
@@ -128,8 +158,14 @@ if (isset($_POST['submit'])) {
                             </div>
 
                             <div class="mb-3">
+                                <label for="">No Handphone</label>
+                                <input type="text" class="form-control" name="no_handphone" value="<?php if (isset($_POST['no_handphone']))
+                                                                                                      echo $_POST['no_handphone'] ?>">
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="Tipe Lokasi">Jabatan </label>
-                                <select name="jenis_kelamin" class="form-control">
+                                <select name="jabatan" class="form-control">
                                     <option value="">--Pilih Jabatan--</option>
 
                                     <?php
@@ -162,80 +198,79 @@ if (isset($_POST['submit'])) {
                                             ?> value="Tidak Aktif">Tidak Aktif</option>
                                 </select>
                             </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
 
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
 
-                        <div class="mb-3">
-                            <label for="">Username</label>
-                            <input type="text" class="form-control" name="username" value="<?php if (isset($_POST['username']))
-                                                                                                echo $_POST['username'] ?>">
-                        </div>
+                            <div class="mb-3">
+                                <label for="">Username</label>
+                                <input type="text" class="form-control" name="username" value="<?php if (isset($_POST['username']))
+                                                                                                    echo $_POST['username'] ?>">
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="">Password</label>
-                            <input type="password" class="form-control" name="password">
-                        </div>
+                            <div class="mb-3">
+                                <label for="">Password</label>
+                                <input type="password" class="form-control" name="password">
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="">Ulangi Password</label>
-                            <input type="password" class="form-control" name="ulangi_password">
-                        </div>
+                            <div class="mb-3">
+                                <label for="">Ulangi Password</label>
+                                <input type="password" class="form-control" name="ulangi_password">
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="Tipe Lokasi">Status</label>
-                            <select name="status" class="form-control">
-                                <option value="">--Pilih Role--</option>
-                                <option <?php if (isset($_POST['role']) && $_POST['role'] == 'admin') {
-                                            echo 'selected';
+                            <div class="mb-3">
+                                <label for="role">Role</label>
+                                <select name="role" class="form-control">
+                                    <option value="">--Pilih Role--</option>
+                                    <option <?php if (isset($_POST['role']) && $_POST['role'] == 'admin') {
+                                                echo 'selected';
+                                            }
+                                            ?> value="admin">Admin</option>
+                                    <option <?php if (isset($_POST['status']) && $_POST['status'] == 'pegawai') {
+                                                echo 'selected';
+                                            }
+                                            ?> value="pegawai">Pegawai</option>
+                                </select>
+
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="">Lokasi Presensi </label>
+                                <select name="lokasi_presensi" class="form-control">
+                                    <option value="">--Pilih Lokasi Presensi--</option>
+
+                                    <?php
+                                    $ambil_lok_presensi = mysqli_query($connection, "SELECT * FROM lokasi_presensi ORDER BY nama_lokasi ASC");
+
+                                    while ($lokasi = mysqli_fetch_assoc($ambil_lok_presensi)) {
+                                        $nama_lokasi = $lokasi['nama_lokasi'];
+
+                                        if (isset($_POST['lokasi_presensi']) && $_POST['lokasi_presensi'] == $nama_lokasi) {
+                                            echo '<option value="' . $nama_lokasi . '"selected="selected">' . $nama_lokasi . '</option>';
+                                        } else {
+                                            echo '<option value="' . $nama_lokasi . '">' . $nama_lokasi . '</option>';
                                         }
-                                        ?> value="admin">Admin</option>
-                                <option <?php if (isset($_POST['status']) && $_POST['status'] == 'pegawai') {
-                                            echo 'selected';
-                                        }
-                                        ?> value="pegawai">Pegawai</option>
-                            </select>
-
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="">Lokasi Presensi </label>
-                            <select name="jenis_kelamin" class="form-control">
-                                <option value="">--Pilih Lokasi Presensi--</option>
-
-                                <?php
-                                $ambil_lok_presensi = mysqli_query($connection, "SELECT * FROM lokasi_presensi ORDER BY nama_lokasi ASC");
-
-                                while ($lokasi = mysqli_fetch_assoc($ambil_lok_presensi)) {
-                                    $nama_lokasi = $lokasi['nama_lokasi'];
-
-                                    if (isset($_POST['lokasi_presensi']) && $_POST['lokasi_presensi'] == $nama_lokasi) {
-                                        echo '<option value="' . $nama_lokasi . '"selected="selected">' . $nama_lokasi . '</option>';
-                                    } else {
-                                        echo '<option value="' . $nama_lokasi . '">' . $nama_lokasi . '</option>';
                                     }
-                                }
-                                ?>
-                            </select>
-                        </div>
+                                    ?>
+                                </select>
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="">Foto</label>
-                            <input type="file" class="form-control" name="foto">
+                            <div class="mb-3">
+                                <label for="">Foto</label>
+                                <input type="file" class="form-control" name="foto">
+                            </div>
+                            <button type="submit" class="btn btn-primary" name="submit">Simpan</button>
                         </div>
-
-                        <button type="submit" class="btn btn-primary" name="submit">Simpan</button>
                     </div>
-                </div>
-            </div>
-        </div>
         </form>
+    </div>
+</div>
 
 
 
-        <?php include("../layout/footer.php") ?>
+<?php include("../layout/footer.php") ?>
