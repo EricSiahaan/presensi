@@ -30,7 +30,7 @@ if (isset($_POST['submit'])) {
     $jabatan = htmlspecialchars($_POST['jabatan']);
     $username = htmlspecialchars($_POST['username']);
     $status = htmlspecialchars($_POST['status']);
-    $password = htmlspecialchars($_POST['password'], PASSWORD_DEFAULT);
+    $password = htmlspecialchars($_POST['password']);
     $role = htmlspecialchars($_POST['role']);
     $lokasi_presensi = htmlspecialchars($_POST['lokasi_presensi']);
 
