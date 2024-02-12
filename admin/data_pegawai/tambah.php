@@ -81,23 +81,23 @@ if (isset($_POST['submit'])) {
         if (empty($status)) {
             $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Status wajib di isi";
         }
-        
+
         if (empty($lokasi_presensi)) {
             $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Lokasi Presensi Wajib di isi";
         }
-        
+
         if ($_POST['password'] != $_POST['ulangi_password']) {
             $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Password Tidak Cocok";
         }
 
-        if(!in_array(strtolower($ambil_ekstensi), $ekstensi_diizinkan)) {
+        if (!in_array(strtolower($ambil_ekstensi), $ekstensi_diizinkan)) {
             $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Format Tidak Sesuai";
         }
 
         if ($ukuran_file > $max_ukuran_file) {
             $pesan_kesalahan[] = "<i class='fa-solid fa-check'></i>Ukuran Melebihi 10 MB";
         }
- if (!empty($pesan_kesalahan)) {
+        if (!empty($pesan_kesalahan)) {
             $_SESSION['validasi'] = implode("<br>",  $pesan_kesalahan);
         } else {
             $pegawai = mysqli_query($connection, "INSERT INTO pegawai(nip, nama, jenis_kelamin, alamat, no_handphone, jabatan, lokasi_presensi, foto) VALUES
@@ -111,7 +111,6 @@ if (isset($_POST['submit'])) {
             $_SESSION['berhasil'] = 'Data Berhasil Di simpan';
             header("Location: pegawai.php");
             exit;
-
         }
     }
 }
@@ -160,7 +159,7 @@ if (isset($_POST['submit'])) {
                             <div class="mb-3">
                                 <label for="">No Handphone</label>
                                 <input type="text" class="form-control" name="no_handphone" value="<?php if (isset($_POST['no_handphone']))
-                                                                                                      echo $_POST['no_handphone'] ?>">
+                                                                                                        echo $_POST['no_handphone'] ?>">
                             </div>
 
                             <div class="mb-3">

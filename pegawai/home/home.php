@@ -19,7 +19,6 @@ while ($lokasi = mysqli_fetch_array($result)) {
     $longitude_kantor = $lokasi['longitude'];
     $radius = $lokasi['radius'];
     $zona_waktu = $lokasi['zona_waktu'];
-
 }
 
 if ($zona_waktu = 'WIB') {
@@ -86,7 +85,7 @@ if ($zona_waktu = 'WIB') {
                             <input type="hidden" value="<?= $zona_waktu ?>" name="zona_waktu">
                             <input type="hidden" value="<?= date('Y-m-d') ?>" name="tanggal_masuk">
                             <input type="hidden" value="<?= date('H:i:s') ?>" name="jam_masuk">
-                            <button type="submit" class="btn btn-primary mt-3">Masuk</button>
+                            <button type="submit" name="tombol_masuk" class="btn btn-primary mt-3">Masuk</button>
                         </form>
                     </div>
 
@@ -155,6 +154,7 @@ if ($zona_waktu = 'WIB') {
     }
 
     getLocation();
+
     function getLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
