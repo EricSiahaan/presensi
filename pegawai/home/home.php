@@ -21,6 +21,8 @@ while ($lokasi = mysqli_fetch_array($result)) {
     $zona_waktu = $lokasi['zona_waktu'];
 }
 
+
+
 if ($zona_waktu = 'WIB') {
     date_default_timezone_set('Asia/Jakarta');
 } else if ($zona_waktu = 'WITA') {
