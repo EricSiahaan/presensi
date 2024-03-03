@@ -169,6 +169,32 @@
 
     <?php unset($_SESSION['gagal']); ?>
 <?php } ?>
+
+<!---  Swwet Alert Validasi ---->
+
+<?php if (isset($_SESSION['berhasil'])) : ?>
+
+    <script>
+        const Berhasil = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+        Berhasil.fire({
+            icon: "success",
+            title: "<?= $_SESSION['berhasil'] ?>"
+        });
+    </script>
+
+    <?php unset($_SESSION['berhasil']) ?>
+
+<?php endif; ?>
 </body>
 
 </html>

@@ -10,22 +10,22 @@ if (!isset($_SESSION['login'])) {
 include_once("../../config.php");
 
 $file_foto = $_POST['photo'];
-$id_pegawai = $_POST['id'];
-$tanggal_masuk = $_POST['tanggal_masuk'];
-$jam_masuk = $_POST['jam_masuk'];
+$id_presensi = $_POST['id'];
+$tanggal_keluar = $_POST['tanggal_keluar'];
+$jam_keluar = $_POST['jam_keluar'];
 
 $foto = $file_foto;
 $foto = str_replace('data:image/jpeg;base64,', '', $foto);
 $foto = str_replace(' ', '+', $foto);
 $data = base64_decode($foto);
-$nama_file = 'foto/' . 'masuk' . date('Y-m-d') . '.png';
-$file = 'masuk' . date('Y-m-d') . '.png';
+$nama_file = 'foto/' . 'keluar' . date('Y-m-d') . '.png';
+$file = 'keluar' . date('Y-m-d') . '.png';
 file_put_contents($nama_file, $data);
 
-$result = mysqli_query($connection, "INSERT INTO presensi(id_pegawai, tanggal_masuk, jam_masuk, foto_masuk) VALUES ('$id_pegawai', '$tanggal_masuk', '$jam_masuk', '$file')");
+$result = mysqli_query($connection, "UPDATE presensi SET tanggal_keluar='$tanggal_keluar',jam_keluar='$jam_keluar', foto_keluar = '$file' WHERE id=$id_presensi");
 
 if ($result) {
-    $_SESSION['berhasil'] = "Presensi masuk berhasil";
+    $_SESSION['berhasil'] = "Presensi keluar berhasil";
 } else {
-    $_SESSION['gagal'] = "Presensi Masuk Gagal ";
+    $_SESSION['gagal'] = "Presensi keluar Gagal ";
 }
