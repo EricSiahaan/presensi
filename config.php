@@ -3,7 +3,7 @@
 $db_host = "localhost";
 $db_user = "root";
 $db_pass = 17081945;
-$db_name = "asm-presensi";
+$db_name = "presensi";
 
 
 $connection = mysqli_connect($db_host, $db_user, $db_pass, $db_name);

@@ -23,8 +23,6 @@ if (!isset($_SESSION['login'])) {
     header("Location:../../auth/login.php?pesan=tolak_akses");
 }
 include("../layout/header.php");
-// require_once("../home/home.php");
-
 include_once("../../config.php");
 
 if (isset($_POST['tombol_masuk'])) {
@@ -40,7 +38,7 @@ if (isset($_POST['tombol_masuk'])) {
 
 if (empty($latitude_pegawai) || empty($longitude_pegawai)) {
 
-    $_SESSION['gagal'] = "GPS Belum aktif";
+    $_SESSION['gagal'] = "Lokasi Anda Kejauhan";
     header("Location:../home/home.php");
     exit;
 }
@@ -54,6 +52,7 @@ if (empty($latitude_kantor) || empty($longitude_kantor)) {
 }
 
 
+
 $perbedaan_koordinat = $longitude_kantor - $longitude_kantor;
 $jarak = sin(deg2rad($latitude_pegawai)) * sin(deg2rad($latitude_kantor)) + cos(deg2rad($latitude_pegawai)) * cos(deg2rad($latitude_kantor)) *
     cos(deg2rad($perbedaan_koordinat));
@@ -63,12 +62,14 @@ $mil = $jarak * 60 * 1.1515;
 $jarak_km = $mil * 1.609344;
 $jarak_meter = $jarak_km * 1000;
 
+
 ?>
 
 <?php if ($jarak_meter > $radius) { ?>
     <?=
     $_SESSION['gagal'] = "Anda berada di luar area kantor";
     header("Location:../home/home.php");
+    exit;
     ?>
 <?php } else { ?>
     <div class="page-body">

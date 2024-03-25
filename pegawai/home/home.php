@@ -5,6 +5,7 @@ if (!isset($_SESSION['login'])) {
 } else if ($_SESSION["role"] != 'pegawai') {
     header("Location:../../auth/login.php?pesan=tolak_akses");
 }
+$judul = 'Home';
 include("../layout/header.php");
 
 include_once("../../config.php");

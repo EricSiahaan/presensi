@@ -13,7 +13,6 @@ include_once('../../config.php');
 if (empty($_GET['filter_bulan'])) {
     $bulan_sekarang = date('Y-m');
     $result = mysqli_query($connection, "SELECT presensi .*, pegawai.nama, pegawai.lokasi_presensi FROM presensi JOIN pegawai ON presensi.id_pegawai = pegawai.id WHERE DATE_FORMAT(tanggal_masuk, '%Y-%m')= '$bulan_sekarang' ORDER BY tanggal_masuk DESC");
-
 } else {
     $filter_tahun_bulan = $_GET['filter_tahun'] . '-' . $_GET['filter_bulan'];
     $result = mysqli_query($connection, "SELECT presensi.*, pegawai.nama, pegawai.lokasi_presensi FROM presensi JOIN pegawai ON presensi.id_pegawai = pegawai.id WHERE DATE_FORMAT(tanggal_masuk, '%Y-%m') = '$filter_tahun_bulan' ORDER BY tanggal_masuk DESC");
@@ -31,8 +30,7 @@ if (empty($_GET['filter_bulan'])) {
     <div class="container-xl">
         <div class="row">
             <div class="col-md-2">
-                <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
-                    data-bs-target="#exampleModal">
+                <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
                     Export Excel
                 </button>
             </div>
@@ -90,7 +88,7 @@ if (empty($_GET['filter_bulan'])) {
 
                 <?php
                 $no = 1;
-                while ($rekap = mysqli_fetch_array($result)):
+                while ($rekap = mysqli_fetch_array($result)) :
                     // calculate timework
                     $jam_tanggal_masuk = date('Y-m-d H:i:s', strtotime($rekap['tanggal_masuk'] . ' ' . $rekap['jam_masuk']));
                     $jam_tanggal_keluar = date('Y-m-d H:i:s', strtotime($rekap['tanggal_keluar'] . ' ' . $rekap['jam_keluar']));
@@ -108,7 +106,7 @@ if (empty($_GET['filter_bulan'])) {
                     $lokasi_presensi = $rekap['lokasi_presensi'];
                     $lokasi = mysqli_query($connection, "SELECT * FROM lokasi_presensi WHERE nama_lokasi ='$lokasi_presensi'");
 
-                    while ($lokasi_result = mysqli_fetch_array($lokasi)):
+                    while ($lokasi_result = mysqli_fetch_array($lokasi)) :
                         $jam_masuk_kantor = date('H:i:s', strtotime($lokasi_result['jam_masuk']));
                     endwhile;
 
@@ -120,7 +118,7 @@ if (empty($_GET['filter_bulan'])) {
                     $total_jam_terlambat = floor($terlambat / 3600);
                     $terlambat -= $total_jam_terlambat * 3600;
                     $selisih_menit_terlambat = floor($terlambat / 60);
-                    ?>
+                ?>
                     <tr>
                         <td>
                             <?= $no++ ?>
@@ -138,16 +136,16 @@ if (empty($_GET['filter_bulan'])) {
                             <?= $rekap['jam_keluar'] ?>
                         </td>
                         <td class="text-center">
-                            <?php if ($rekap['tanggal_keluar'] == '0000-00-00'): ?>
+                            <?php if ($rekap['tanggal_keluar'] == '0000-00-00') : ?>
                                 <span>0 Jam 0 Menit</span>
-                            <?php else: ?>
+                            <?php else : ?>
                                 <?= $total_jam_kerja . ' Jam ' . $selisih_menit_kerja . ' Menit' ?>
                             <?php endif; ?>
                         </td>
                         <td class="text-center">
-                            <?php if ($total_jam_terlambat < 0): ?>
+                            <?php if ($total_jam_terlambat < 0) : ?>
                                 <span class="badge bg-success">On Time</span>
-                            <?php else: ?>
+                            <?php else : ?>
                                 <span class="badge bg-danger">Late</span>
                             <?php endif; ?>
                         </td>
@@ -166,7 +164,7 @@ if (empty($_GET['filter_bulan'])) {
                 <h5 class="modal-title">Export Excel Rekap Presensi Bulanan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('admin/presensi/rekap_bulanan_excel.php') ?>">
+            <form method="POST" action="<?= base_url('admin/presensi/rekap_bulanan_excel.php') ?>">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="">Bulan</label>

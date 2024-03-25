@@ -17,13 +17,11 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 $filter_tahun_bulan = $_POST['filter_tahun'] . '-' . $_POST['filter_bulan'];
 $result = mysqli_query($connection, "SELECT presensi.*, pegawai.nama, pegawai.lokasi_presensi, pegawai.nip FROM presensi JOIN pegawai ON presensi.id_pegawai = pegawai.id WHERE DATE_FORMAT(tanggal_masuk, '%Y-%m') = '$filter_tahun_bulan' ORDER BY tanggal_masuk DESC");
-;
-
 
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 
-$sheet->setCellValue('A1', 'Rekap Presensi Bulanan');
+$sheet->setCellValue('A1', 'REKAP PPRESENSI BULANAN');
 $sheet->setCellValue('A2', 'Bulan');
 $sheet->setCellValue('A3', 'Tahun');
 $sheet->setCellValue('C2', $_POST['filter_bulan']);
@@ -37,7 +35,6 @@ $sheet->setCellValue('F5', 'TANGGAL KELUAR');
 $sheet->setCellValue('G5', 'JAM KELUAR');
 $sheet->setCellValue('H5', 'TOTAL JAM KERJA');
 $sheet->setCellValue('I5', 'TOTAL JAM TERLAMBAT');
-
 
 
 $sheet->mergeCells('A1:F1');
@@ -63,10 +60,9 @@ while ($data = mysqli_fetch_array($result)) {
 
     // calculate total late
     $lokasi_presensi = $data['lokasi_presensi'];
-    $lokasi = mysqli_query($connection, "SELECT * FROM lokasi_presensi WHERE 
-    nama_lokasi ='$lokasi_presensi'");
+    $lokasi = mysqli_query($connection, "SELECT * FROM lokasi_presensi WHERE nama_lokasi ='$lokasi_presensi'");
 
-    while ($lokasi_result = mysqli_fetch_array($lokasi)):
+    while ($lokasi_result = mysqli_fetch_array($lokasi)) :
         $jam_masuk_kantor = date('H:i:s', strtotime($lokasi_result['jam_masuk']));
     endwhile;
 
@@ -94,14 +90,11 @@ while ($data = mysqli_fetch_array($result)) {
 }
 
 
-/* Here there will be some code where you create $spreadsheet */
-
 // redirect output to client browser
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-header('Content-Disposition: attachment;filename="laporan Presensi Bulanan.xlsx"');
+header('Content-Disposition: attachment;filename="Laporan Presensi Bulanan.xlsx"');
 header('Cache-Control: max-age=0');
 
 $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
 $writer = new Xlsx($spreadsheet);
 $writer->save('php://output');
-?>

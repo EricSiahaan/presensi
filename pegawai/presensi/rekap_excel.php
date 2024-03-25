@@ -3,7 +3,7 @@ ob_start();
 session_start();
 if (!isset($_SESSION['login'])) {
     header("location:../../auth/login.php?pesan=belum_login");
-} else if ($_SESSION["role"] != 'admin') {
+} else if ($_SESSION["role"] != 'pegawai') {
     header("location:../../auth/login.php?pesan=tolak_akses");
 }
 
@@ -14,32 +14,35 @@ require('../../assets/vendor/autoload.php');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-$tanggal_dari = $_GET['tanggal_dari'];
-$tanggal_sampai = $_GET['tanggal_sampai'];
-$result = mysqli_query($connection, "SELECT presensi.*, pegawai.nama, pegawai.lokasi_presensi, pegawai.nip FROM 
-    presensi JOIN pegawai ON presensi.id_pegawai = pegawai.id WHERE tanggal_masuk BETWEEN 
+$id = $_SESSION['id'];
+$tanggal_dari = $_POST['tanggal_dari'];
+$tanggal_sampai = $_POST['tanggal_sampai'];
+$result = mysqli_query($connection, "SELECT * FROM presensi WHERE id_pegawai = '$id' AND tanggal_masuk BETWEEN 
     '$tanggal_dari' AND '$tanggal_sampai' ORDER BY tanggal_masuk DESC");
 
+$lokasi_presensi = $_SESSION['lokasi_presensi'];
+$lokasi = mysqli_query($connection, "SELECT * FROM lokasi_presensi WHERE nama_lokasi = '$lokasi_presensi'");
 
+while ($lokasi_presensi = mysqli_fetch_array($lokasi)) :
+    $jam_masuk_kantor = date('H:i:s', strtotime($lokasi_presensi['jam_masuk']));
+endwhile;
 
 
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 
-$sheet->setCellValue('A1', 'Rekap Presensi Harian');
+$sheet->setCellValue('A1', 'Rekap Presensi');
 $sheet->setCellValue('A2', 'Tanggal Awal');
 $sheet->setCellValue('A3', 'Tanggal Ahkir');
 $sheet->setCellValue('C2', $tanggal_dari);
 $sheet->setCellValue('C3', $tanggal_sampai);
 $sheet->setCellValue('A5', 'NO');
-$sheet->setCellValue('B5', 'NAMA');
-$sheet->setCellValue('C5', 'NIP');
-$sheet->setCellValue('D5', 'TANGAL MASUK');
-$sheet->setCellValue('E5', 'JAM MASUK');
-$sheet->setCellValue('F5', 'TANGGAL KELUAR');
-$sheet->setCellValue('G5', 'JAM KELUAR');
-$sheet->setCellValue('H5', 'TOTAL JAM KERJA');
-$sheet->setCellValue('I5', 'TOTAL JAM TERLAMBAT');
+$sheet->setCellValue('B5', 'TANGAL MASUK');
+$sheet->setCellValue('C5', 'JAM MASUK');
+$sheet->setCellValue('D5', 'TANGGAL KELUAR');
+$sheet->setCellValue('E5', 'JAM KELUAR');
+$sheet->setCellValue('F5', 'TOTAL JAM KERJA');
+$sheet->setCellValue('G5', 'TOTAL JAM TERLAMBAT');
 
 
 
@@ -51,7 +54,7 @@ $no = 1;
 $row = 6;
 
 while ($data = mysqli_fetch_array($result)) {
-
+    // calculate timework
     $jam_tanggal_masuk = date('Y-m-d H:i:s', strtotime($data['tanggal_masuk'] . ' ' . $data['jam_masuk']));
     $jam_tanggal_keluar = date('Y-m-d H:i:s', strtotime($data['tanggal_keluar'] . ' ' . $data['jam_keluar']));
 
@@ -64,15 +67,6 @@ while ($data = mysqli_fetch_array($result)) {
     $selisih -= $total_jam_kerja * 3600;
     $selisih_menit_kerja = floor($selisih / 60);
 
-    // calculate total late
-    $lokasi_presensi = $data['lokasi_presensi'];
-    $lokasi = mysqli_query($connection, "SELECT * FROM lokasi_presensi 
-    WHERE nama_lokasi ='$lokasi_presensi'");
-
-    while ($lokasi_result = mysqli_fetch_array($lokasi)) :
-        $jam_masuk_kantor = date('H:i:s', strtotime($lokasi_result['jam_masuk']));
-    endwhile;
-
     $jam_masuk = date('H:i:s', strtotime($data['jam_masuk']));
     $timestamp_jam_masuk_real = strtotime($jam_masuk);
     $timestamp_jam_masuk_kantor = strtotime($jam_masuk_kantor);
@@ -83,25 +77,22 @@ while ($data = mysqli_fetch_array($result)) {
     $selisih_menit_terlambat = floor($terlambat / 60);
 
     $sheet->setCellValue('A' . $row, $no);
-    $sheet->setCellValue('B' . $row, $data['nama']);
-    $sheet->setCellValue('C' . $row, $data['nip']);
-    $sheet->setCellValue('D' . $row, $data['tanggal_masuk']);
-    $sheet->setCellValue('E' . $row, $data['jam_masuk']);
-    $sheet->setCellValue('F' . $row, $data['tanggal_keluar']);
-    $sheet->setCellValue('G' . $row, $data['jam_keluar']);
-    $sheet->setCellValue('H' . $row, $total_jam_kerja . ' Jam ' . $selisih_menit_kerja . ' Menit');
-    $sheet->setCellValue('I' . $row, $total_jam_terlambat . ' Jam ' . $selisih_menit_terlambat . ' Menit');
+    $sheet->setCellValue('B' . $row, $data['tanggal_masuk']);
+    $sheet->setCellValue('C' . $row, $data['jam_masuk']);
+    $sheet->setCellValue('D' . $row, $data['tanggal_keluar']);
+    $sheet->setCellValue('E' . $row, $data['jam_keluar']);
+    $sheet->setCellValue('F' . $row, $total_jam_kerja . ' Jam ' . $selisih_menit_kerja . ' Menit');
+    $sheet->setCellValue('G' . $row, $total_jam_terlambat . ' Jam ' . $selisih_menit_terlambat . ' Menit');
 
     $no++;
     $row++;
 }
 
-
 /* Here there will be some code where you create $spreadsheet */
 
 // redirect output to client browser
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-header('Content-Disposition: attachment;filename="laporan Presensi Harian.xlsx"');
+header('Content-Disposition: attachment;filename="laporan Presensi.xlsx"');
 header('Cache-Control: max-age=0');
 
 $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
